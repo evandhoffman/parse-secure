@@ -13,6 +13,10 @@ use DBI;
 use Date::Parse;
 use Time::ParseDate;
 
+use Geo::IP;
+my $gi = Geo::IP->open('/var/www/html/GeoLiteCity.dat', GEOIP_STANDARD);
+
+
 my @patterns = ( 	qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+invalid user ([\S]+) from ([\d\.]+) port/, 
 			qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+User ([\S]+) from ([\d\.]+) not allowed because/, 
 			qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+Failed password for (root) from ([\d\.]+) port/ );
@@ -33,7 +37,7 @@ my $newest_record = $result->{'newest'};
 
 # insert into ssh_hack_attempts (datetime, remote_addr, username) values (to_timestamp('Nov 01 2011 00:00:00','Mon DD YYYY HH24:MI:SS'), '127.0.0.1', 'evan');
 $sth = $dbh->prepare(qq{
-	insert into ssh_hack_attempts (datetime, remote_addr, username) values (to_timestamp(?), ?, ?)	
+	insert into ssh_hack_attempts (datetime, remote_addr, username, country_code, country_name, region_name, city, lat, long) values (to_timestamp(?), ?, ?, ?, ?, ?, ? , ? ,?)	
 });
 
 while(<>) {
@@ -44,7 +48,9 @@ while(<>) {
 			my $epoch = parsedate($date);
 			if ($epoch > $newest_record) {
 		#	print "$epoch\t$ip\t$user\n";
-			$sth->execute($epoch, $ip, $user);
+				my $record = $gi->record_by_addr($ip);
+				$sth->execute($epoch, $ip, $user, $record->country_code, $record->country_name, $record->region_name,
+					$record->city, $record->latitude, $record->longitude);
 			}
 
 		#	my ($ss,$mm,$hh,$day,$month,$year,$zone) = strptime($date);
