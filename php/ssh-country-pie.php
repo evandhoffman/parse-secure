@@ -9,7 +9,7 @@
 	}
 
 	$dbc = pg_connect("dbname=sshlog host=127.0.0.1 user=sshlog password=sshlog");
-	$res = pg_query("select case when country_code is null then 'unknown' else country_code end as country_code, count(1) as c from ssh_hack_attempts where (now() - datetime) < interval '$days days' group by country_code");
+	$res = pg_query("select case when country_code is null then '??' else country_code end as country_code, count(1) as c from ssh_hack_attempts where (now() - datetime) < interval '$days days' group by country_code order by c desc");
 
 	if (!$res) {
 		echo "DB Error.  Sadface.\n";
