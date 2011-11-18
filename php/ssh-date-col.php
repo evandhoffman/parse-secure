@@ -8,10 +8,12 @@
 		}
 	}
 
+	$sql_date_format = 'Mon DD, YYYY';
+
 	$dbc = pg_connect("dbname=sshlog host=127.0.0.1 user=sshlog password=sshlog");
-	$res = pg_query("select a.the_date, count(b.remote_addr) as c  from dates a
-left join ssh_hack_attempts b on to_char(a.the_date,'YYYY-MM-DD') =
-to_char(b.datetime,'YYYY-MM-DD') where (now() - a.the_date) < interval '$days days' and
+	$res = pg_query("select to_char(a.the_date, '$sql_date_format') as the_date, count(b.remote_addr) as c  from dates a
+left join ssh_hack_attempts b on to_char(a.the_date,'$sql_date_format') =
+to_char(b.datetime,'$sql_date_format') where (now() - a.the_date) < interval '$days days' and
 a.the_date <= now() group by a.the_date order by a.the_date;");
 //	$res = pg_query("select case when country_code is null then 'unknown' else country_code end as country_code, count(1) as c from ssh_hack_attempts where (now() - datetime) < interval '$days days' group by country_code");
 
@@ -50,6 +52,10 @@ a.the_date <= now() group by a.the_date order by a.the_date;");
 						text: 'Daily SSH Attacks'
 					},
 					xAxis: {
+						labels: {
+							rotation: 90,
+							align: "left"
+						},
 						categories: 
 							<?php print json_encode($dates); ?>
 					},
