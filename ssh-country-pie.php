@@ -1,7 +1,7 @@
 <?php
 
 	$days = 30;
-	if ($_GET['days']) {
+	if (isset($_GET['days'])) {
 		$x = intval($_GET['days']);
 		if ($x > 0 && $x < 10000) {
 			$days = $x;
