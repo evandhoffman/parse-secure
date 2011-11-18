@@ -77,8 +77,8 @@
 <body>
 
 
-<div id='piechart'></div>
-
+<div id='piechart' style="width: 800px; height: 500px; margin: 0 auto"></div>
+<a href="ssh-date-col.php">Attacks broken out by day</a>
 
 </body>
 </html>

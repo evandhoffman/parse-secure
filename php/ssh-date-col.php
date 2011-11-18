@@ -98,8 +98,9 @@ a.the_date <= now() group by a.the_date order by a.the_date;");
 <body>
 
 
-<div id='container'></div>
+<div id='container' style="width: 800px; height: 500px; margin: 0 auto"></div>
 
+<a href="ssh-country-pie.php">Attacks broken out by country</a>
 
 </body>
 </html>
