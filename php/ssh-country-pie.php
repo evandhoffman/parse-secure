@@ -9,7 +9,7 @@
 	}
 
 	$dbc = pg_connect("dbname=sshlog host=127.0.0.1 user=sshlog password=sshlog");
-	$res = pg_query("select case when country_code is null then '??' else country_code end as country_code, count(1) as c from ssh_hack_attempts where (now() - datetime) < interval '$days days' group by country_code order by c desc");
+	$res = pg_query("select case when country_code is null then '??' else country_code end as country_code, case when country_name is null then '???' else country_name end as country_name, count(1) as c from ssh_hack_attempts where (now() - datetime) < interval '$days days' group by country_code, country_name order by c desc");
 
 	if (!$res) {
 		echo "DB Error.  Sadface.\n";
@@ -18,7 +18,8 @@
 
 	$data = array();
 	while ($row = pg_fetch_assoc($res)) {
-		$data[] = array($row['country_code'], intval($row['c']));
+		$data[] = array($row['country_name'] . ' ('.$row['country_code'].')', intval($row['c']));
+		//$country_name[$row['country_code']] = $row['country_name'];
 	//	print "<tr><td>$row[remote_addr]</td><td>$row[c]</td></tr>\n";
 	}
 	

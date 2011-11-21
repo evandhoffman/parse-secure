@@ -78,7 +78,7 @@ a.the_date <= now() group by a.the_date order by a.the_date;");
 					tooltip: {
 						formatter: function() {
 							return ''+
-								this.x +': '+ this.y +' mm';
+								this.x +': '+ this.y +' attacks';
 						}
 					},
 					plotOptions: {
