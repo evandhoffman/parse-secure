@@ -17,9 +17,14 @@ use Geo::IP;
 my $gi = Geo::IP->open('/var/www/html/GeoLiteCity.dat', GEOIP_STANDARD);
 
 
-my @patterns = ( 	qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+invalid user ([\S]+) from ([\d\.]+) port/, 
-			qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+User ([\S]+) from ([\d\.]+) not allowed because/, 
-			qr/(\w{3} \d{2} \d{2}:\d{2}:\d{2}).+Failed password for (root) from ([\d\.]+) port/ );
+my @patterns = ( 	qr/(\w{3}\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2}).+invalid user ([\S]+) from ([\d\.]+) port/, 
+			qr/(\w{3}\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2}).+User ([\S]+) from ([\d\.]+) not allowed because/, 
+			qr/(\w{3}\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2}).+Failed password for (root) from ([\d\.]+) port/ );
+
+#Dec  8 08:57:20 lunix2011 sshd[26778]: User root from 78.129.230.32 not allowed because not listed in AllowUsers
+#Dec  8 08:57:20 lunix2011 sshd[26779]: input_userauth_request: invalid user root
+#Dec  8 08:57:20 lunix2011 sshd[26778]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=78.129.230.32  user=root
+#Dec  8 08:57:23 lunix2011 sshd[26778]: Failed password for invalid user root from 78.129.230.32 port 38062 ssh2
 
 my $dbh = DBI->connect("dbi:Pg:dbname=sshlog", 'sshlog', 'sshlog', {AutoCommit => 1});
 
@@ -45,6 +50,7 @@ while(<>) {
 	chomp;
 	foreach my $pat (@patterns) {
 		if (my ($date, $user, $ip) = ( $_ =~ $pat )) {
+#			print "==> MATCH $_\n"; 
 			my $epoch = parsedate($date);
 			if ($epoch > $newest_record) {
 		#	print "$epoch\t$ip\t$user\n";
